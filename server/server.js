@@ -7,13 +7,12 @@ dotenv.config()
 const corsOptions = {
   origin: ["http://localhost:5173"]
 };
+app.use(cors(corsOptions));
 const PORT = process.env.PORT;
 const mysql = require('mysql');
 
 
-app.use(cors(corsOptions));
-
-
+//Connection of Database
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
