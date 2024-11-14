@@ -29,9 +29,9 @@ The team that will be working on this project:
 
 
 # Yarn
-yarn install
-yarn add tailwind postcss autoprefixer --save-dev
-yarn add flowbite
-yarn add flowbite-react
-yarn add vite --dev
+- yarn install
+- yarn add tailwind postcss autoprefixer --save-dev
+- yarn add flowbite
+- yarn add flowbite-react
+- yarn add vite --dev
 
