@@ -15,5 +15,8 @@ Test Test
 # Yarn
 
 yarn install
-yarn add 
+yarn add tailwind postcss autoprefixer --save-dev
+yarn add flowbite
+yarn add flowbite-react
+yarn add vite --dev
 >>>>>>> Stashed changes
