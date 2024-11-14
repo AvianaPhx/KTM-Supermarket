@@ -27,18 +27,11 @@ The team that will be working on this project:
 - while trying to run the frontend (Vite) and error might come saying ( 'vite' is not recognized as an internal or external command, operable program or batch file. )
 - To fix that type "npm install" in ( E:\Github Repository\KTM-Supermarket\ecommerce )
 
-Test Test
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
 
 # Yarn
-
 yarn install
 yarn add tailwind postcss autoprefixer --save-dev
 yarn add flowbite
 yarn add flowbite-react
 yarn add vite --dev
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
