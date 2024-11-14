@@ -9,3 +9,11 @@ The team that will be working on this project:
 4. Ronit Tamrakar 
 
 Test Test
+<<<<<<< Updated upstream
+=======
+
+# Yarn
+
+yarn install
+yarn add 
+>>>>>>> Stashed changes
