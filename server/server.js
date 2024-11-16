@@ -2,15 +2,22 @@ const express = require("express");
 const app = express();
 const bcrypt = require('bcrypt');
 app.use(express.json());
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
 
 //Import Cors
 const cors = require("cors");
-const corsOptions = {origin: ["http://localhost:5173"]};
+const corsOptions = {
+  origin: ["http://localhost:5173"],
+  method: ["POST", "GET"],
+  credentials: true
+};
 app.use(cors(corsOptions));
 
 //Import Environment Variable 
 const dotenv = require("dotenv");
-dotenv.config({ path: './.env'});
+dotenv.config();
 const PORT = process.env.PORT;
 
 const products = require("./data/Products")
@@ -28,7 +35,33 @@ const db = mysql.createConnection({
   database: process.env.MYSQL_DATABASE
 });
 
+const verifyUser = (req, res, next) => {
+  const token = req.cookies.token;  // Correct way to access cookies
+  if (!token) {
+    return res.json({ Error: "You are not logged in" });
+  } else {
+    jwt.verify(token, process.env.JWT_KEY, (err, decoded) => {
+      if (err) {
+        return res.json({ Error: "Token is not correct" });
+      } else {
+        req.username = decoded.username;
+        next();
+      }
+    });
+  }
+}
 
+app.get('/', verifyUser, (req, res) => {
+  return res.json({Status: "Success", name: req.name});
+})
+
+
+app.post('/logout', (req, res) => {
+  res.clearCookie('token');  // Clears the 'token' cookie
+  return res.json({ Status: 'Logged out successfully' });
+});
+
+// REGISTER PORT ??
 app.post('/register', (req, res) => {
   const { username, email, password } = req.body;
 
@@ -66,6 +99,9 @@ app.post('/login', (req, res) => {
       bcrypt.compare(req.body.password.toString(), data[0].password, (err, response) => {
         if(err) return res.json ({Error: "Password compare error"});
         if(response) {
+          const username = data[0].username;
+          const token = jwt.sign({username}, process.env.JWT_KEY, {expiresIn: '1d'});
+          res.cookie('token', token);
           return res.json({Status: "Success"});
         } else {
           return res.json({Error: "Password not matched"});
