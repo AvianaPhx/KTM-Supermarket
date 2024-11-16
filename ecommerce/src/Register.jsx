@@ -4,13 +4,11 @@ import axios from 'axios';
 
 function Register() {
   const [ values, setValues] = useState({
-    first_name: '',  // Initial state key should match form field names
-    last_name: '',
+    username: '',  // Initial state key should match form field names
     email: '',
     password: ''
   });
 
-  const [showPopup, setShowPopup] = useState(false);  // State to control popup visibility
   const navigate = useNavigate(); // Create navigate function
 
   const handleSubmit = (event) => {
@@ -21,13 +19,7 @@ function Register() {
       console.log('Response:', res);
        // Check if registration was successful
        if (res.data.Status === "Success") {
-        // Show popup message
-        setShowPopup(true);
-
-        // After 2 seconds, navigate to the login page
-        setTimeout(() => {
-          navigate('/login');
-        }, 5000);  // 2 seconds delay
+        navigate('/login');
 
       } else {
         // Show an alert if something went wrong
@@ -53,13 +45,8 @@ function Register() {
         <form onSubmit={handleSubmit}>
 
           <div>
-            <input type="text" onChange={e => setValues({...values, first_name: e.target.value})} value={values.first_name}/>
-            <label htmlFor="">First Name</label>
-          </div>
-
-          <div>
-            <input type="text" onChange={e => setValues({...values, last_name: e.target.value})} value={values.last_name}/>
-            <label htmlFor="">Last Name</label>
+            <input type="text" onChange={e => setValues({...values, username: e.target.value})} value={values.username}/>
+            <label htmlFor="">Username</label>
           </div>
 
           <div>
@@ -86,26 +73,6 @@ function Register() {
             <span>Already have an account?? <a href='/Login'>Log In</a></span>
           </div>
         </form>
-
-        
-      {/* Conditional Popup - Success Message  THIS IS FOR TEST ONLY*/}
-      {showPopup && (
-        <div style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: 'green',
-          color: 'white',
-          padding: '20px',
-          borderRadius: '8px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          zIndex: '1000',
-        }}>
-          <h2>Registration Successful!</h2>
-          <p>You will be redirected to the login page shortly...</p>
-        </div>
-      )}
 
       </div>
     </div>
