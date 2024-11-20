@@ -1,4 +1,4 @@
-import ProductCard from './product-card.jsx';
+import ProductCard from '../components/product-card.jsx';
 
 const ProductGrid = () => {
     //images of products

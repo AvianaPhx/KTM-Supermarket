@@ -49,7 +49,7 @@ import { Navbar, Button } from 'flowbite-react';
 
 const Header = () => {
     return (
-        <Navbar fluid={true} rounded={true} className="bg-red-700 text-white">
+        <Navbar fluid={true} rounded={true} className="bg-red-700 text-white ">
             <Navbar.Brand href="/">
                 <span className="text-2xl font-bold">LOGO</span>
             </Navbar.Brand>
