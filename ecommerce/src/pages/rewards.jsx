@@ -11,9 +11,9 @@ const Rewards = () => {
             <Rewardoption/>
             </div>
             <div className="flex items-stretch place-content-center ml-3">
-            <div className="pr-4"><Rewardsbox first = "5" second = "200" /></div>
-            <div className="pr-4"><Rewardsbox first = "10" second = "400"/></div>
-            <div className="pr-4"><Rewardsbox first = "15" second = "700"/></div>
+            <div className="pr-4"><Rewardsbox first = "5% Discount" second = "200 points"  image="%"/></div>
+            <div className="pr-4"><Rewardsbox first = "10% Discount" second = "400 points" image="%"/></div>
+            <div className="pr-4"><Rewardsbox first = "15% Discount" second = "700 points" image="%"/></div>
             </div>
             </div>
             <div className="py-10 px-20">
