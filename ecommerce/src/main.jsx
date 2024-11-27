@@ -8,13 +8,14 @@ import Footer from './components/footer.jsx';
 import Points from './pages/points.jsx';
 import Rewardsbox from './components/rewards-box.jsx';
 import Rewards from './pages/rewards.jsx';
+import Faq from './pages/Faq.jsx';
 
 //Header ra footer waku ko rakha
 //Product Grid Vaneko chai Product Page
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Header />
-    <Points/>
+    <Faq/>
     <Footer />
   </StrictMode>,
 )
