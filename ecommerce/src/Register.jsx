@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import './Register.css'; // Include the CSS for styling
 
 function Register() {
   const [values, setValues] = useState({ username: '', email: '', password: '' });
@@ -10,14 +11,16 @@ function Register() {
   const handleSubmit = (event) => {
     event.preventDefault();
 
+    // Check if all fields are filled
     if (!values.username || !values.email || !values.password) {
       setErrorMessage('Please fill all fields');
       return;
     }
 
+    // Send registration request to backend
     axios.post('http://localhost:3000/register', values, { withCredentials: true })
       .then(res => {
-        if (res.data.Status === "Success") {
+        if (res.data.Status === 'Success') {
           navigate('/login');
         } else {
           setErrorMessage(res.data.Error || 'Registration failed.');
@@ -30,43 +33,64 @@ function Register() {
   };
 
   return (
-    <div>
-      <h1>Register</h1>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            value={values.username}
-            onChange={e => setValues({ ...values, username: e.target.value })}
-          />
-        </div>
+    <div className="signup-container">
+      {/* Left Section with Logo and Info */}
+      <div className="left-section">
+        <h1 className="signup-logo">LOGO</h1>
+        <p>Shop with us. Enjoy great deals!</p>
+      </div>
 
-        <div>
-          <label htmlFor="email">Email</label>
+      {/* Right Section with Registration Form */}
+      <div className="right-section">
+        <form className="signup-form" onSubmit={handleSubmit}>
+          <h2>Sign up</h2>
+
+          {/* Display error message if any */}
+          {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+
+          {/* Username Input */}
+          <div className="name-fields">
+            <div className="user-name">
+              <label htmlFor="username">User name</label>
+              <input
+                type="text"
+                id="username"
+                value={values.username}
+                onChange={(e) => setValues({ ...values, username: e.target.value })}
+                required
+              />
+            </div>
+          </div>
+
+          {/* Email Input */}
+          <label htmlFor="email">Email address</label>
           <input
             type="email"
             id="email"
             value={values.email}
-            onChange={e => setValues({ ...values, email: e.target.value })}
+            onChange={(e) => setValues({ ...values, email: e.target.value })}
+            required
           />
-        </div>
 
-        <div>
+          {/* Password Input */}
           <label htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
             value={values.password}
-            onChange={e => setValues({ ...values, password: e.target.value })}
+            onChange={(e) => setValues({ ...values, password: e.target.value })}
+            required
           />
-        </div>
 
-        <button type="submit">Sign Up</button>
-        <p>Already have an account? <Link to="/login">Log In</Link></p>
-      </form>
+          {/* Submit Button */}
+          <button type="submit" className="signup-button">Sign up</button>
+
+          {/* Login Link */}
+          <p className="signup-link">
+            Already have an account? <Link to="/login">Log In</Link>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }
