@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 
 
@@ -40,12 +40,12 @@ function Home() {
     // Perform logout logic here (clear authentication data)
     localStorage.removeItem('token');  // or clear cookies if you're using them
     axios.post('http://localhost:3000/logout', {}, { withCredentials: true })
-      .then(response => {
-        console.log('Logged out successfully');
-        setAuth(false);
-        setUsername('');
-        navigate('/login'); // Redirect to login page
-      })
+    .then(() => {  
+      console.log('Logged out successfully');
+      setAuth(false);
+      setUsername('');
+      navigate('/login'); // Redirect to login page
+    })
       .catch(error => {
         console.error('Logout failed:', error.response ? error.response.data : error.message);
       });

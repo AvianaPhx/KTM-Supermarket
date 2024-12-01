@@ -1,82 +1,74 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
 function Register() {
-  const [ values, setValues] = useState({
-    username: '',  // Initial state key should match form field names
-    email: '',
-    password: ''
-  });
-
-  const navigate = useNavigate(); // Create navigate function
+  const [values, setValues] = useState({ username: '', email: '', password: '' });
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    axios.post('http://localhost:3000/register', values)
-    .then(res => {
-      console.log('Response:', res);
-       // Check if registration was successful
-       if (res.data.Status === "Success") {
-        navigate('/login');
+    if (!values.username || !values.email || !values.password) {
+      setErrorMessage('Please fill all fields');
+      return;
+    }
 
-      } else {
-        // Show an alert if something went wrong
-        alert('Error: Registration failed');
-      }
-    })
-    .catch(err => {
-      if (err.response) {
-        // If the error has a response, we can access it safely
-        console.error('Error Response:', err.response.data);
-      } else {
-        // If no response is available, it's likely a network error
-        console.error('Error:', err.message);
-      }
-    });
+    axios.post('http://localhost:3000/register', values, { withCredentials: true })
+      .then(res => {
+        if (res.data.Status === "Success") {
+          navigate('/login');
+        } else {
+          setErrorMessage(res.data.Error || 'Registration failed.');
+        }
+      })
+      .catch(err => {
+        console.error('Error:', err.response ? err.response.data : err.message);  // Log error for debugging
+        setErrorMessage('Network error, please try again later.');
+      });
   };
 
-
-  return(
+  return (
     <div>
-      <div>
-        <h1>Register</h1>
-        <form onSubmit={handleSubmit}>
+      <h1>Register</h1>
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            value={values.username}
+            onChange={e => setValues({ ...values, username: e.target.value })}
+          />
+        </div>
 
-          <div>
-            <input type="text" onChange={e => setValues({...values, username: e.target.value})} value={values.username}/>
-            <label htmlFor="">Username</label>
-          </div>
+        <div>
+          <label htmlFor="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            value={values.email}
+            onChange={e => setValues({ ...values, email: e.target.value })}
+          />
+        </div>
 
-          <div>
-            <input type="email" onChange={e => setValues({...values, email: e.target.value})} value={values.email}/>
-            <label htmlFor="">Your Email</label>
-          </div>
+        <div>
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            value={values.password}
+            onChange={e => setValues({ ...values, password: e.target.value })}
+          />
+        </div>
 
-          <div>
-            <input type="password" onChange={e => setValues({...values, password: e.target.value})}value={values.password}/>
-            <label htmlFor="">Password</label>
-          </div>
-
-          <div>
-            <div>
-              <input type="checkbox" name="remember" />
-              <label htmlFor="Remember Me">Remember me</label>
-            </div>
-            <span>Forgot Password?</span>
-          </div>
-
-          <button type="submit">Sign Up</button>
-
-          <div>
-            <span>Already have an account?? <a href='/Login'>Log In</a></span>
-          </div>
-        </form>
-
-      </div>
+        <button type="submit">Sign Up</button>
+        <p>Already have an account? <Link to="/login">Log In</Link></p>
+      </form>
     </div>
   );
-};
+}
 
 export default Register;

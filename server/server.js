@@ -1,42 +1,35 @@
 const express = require("express");
 const app = express();
-const bcrypt = require('bcrypt');
-app.use(express.json());
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
+const dotenv = require("dotenv");
+dotenv.config();
+
+app.use(express.json());
 app.use(cookieParser());
 
-//Import Cors
-const cors = require("cors");
+// CORS Configuration
 const corsOptions = {
-  origin: ["http://localhost:5173"],
-  method: ["POST", "GET"],
-  credentials: true
+  origin: "http://localhost:5173", // Your React frontend URL
+  methods: ["POST", "GET"],
+  credentials: true // Allow cookies and credentials
 };
 app.use(cors(corsOptions));
 
-//Import Environment Variable 
-const dotenv = require("dotenv");
-dotenv.config();
-const PORT = process.env.PORT;
-
-const products = require("./data/Products")
-const salt = 10;
-
-// Import mySQL
+// MySQL Connection
 const mysql = require("mysql");
-
-
-//Connection of Database
 const db = mysql.createConnection({
-  host: process.env.MYSQL_HOST, // IP Address of the server that will be hosted on
+  host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE
 });
 
+// Helper: Verify JWT Token Middleware
 const verifyUser = (req, res, next) => {
-  const token = req.cookies.token;  // Correct way to access cookies
+  const token = req.cookies.token;
   if (!token) {
     return res.json({ Error: "You are not logged in" });
   } else {
@@ -49,102 +42,62 @@ const verifyUser = (req, res, next) => {
       }
     });
   }
-}
+};
 
-app.get('/', verifyUser, (req, res) => {
-  return res.json({Status: "Success", name: req.name});
-})
-
-
-app.post('/logout', (req, res) => {
-  res.clearCookie('token');  // Clears the 'token' cookie
-  return res.json({ Status: 'Logged out successfully' });
-});
-
-// REGISTER PORT ??
+// Register Route
 app.post('/register', (req, res) => {
   const { username, email, password } = req.body;
-
-  //Validate requried fields
   if (!username || !email || !password) {
-    return res.status(400).json({ error: 'Missing required fields' });
+    return res.status(400).json({ Error: 'Missing required fields' });
   }
 
-  // Hash the password
-  bcrypt.hash(password, salt, (err, hash) => {
-    if(err) { 
-      return res.status(500).json({ Error: "Error hashing password", details: err });
-    }
+  bcrypt.hash(password, 10, (err, hash) => {
+    if (err) return res.status(500).json({ Error: "Hashing error" });
 
-    // SQL insertion after password hashing
-    const sql = "INSERT INTO user (`username` ,`email`,`password`) VALUES (?)";
+    const sql = "INSERT INTO user (`username`, `email`, `password`) VALUES (?)";
     const values = [username, email, hash];
 
     db.query(sql, [values], (err, result) => {
-      if(err) {
-        // Log the actual MySQL error for debugging
-        console.error('MySQL error:', err);
-        return res.status(500).json({ Error: "Inserting data Error in server", details: err.message });
-      }
-      return res.json({Status: "Success"});
+      if (err) return res.status(500).json({ Error: "Database insertion error" });
+      res.json({ Status: "Success" });
     });
   });
 });
 
+// Login Route
 app.post('/login', (req, res) => {
-  const sql = 'SELECT * FROM user WHERE email = ?';
-  db.query(sql, [req.body.email], (err, data) => {
-    if(err ) return res.json({Error: "Login error in server"});
-    if(data.length > 0) {
-      bcrypt.compare(req.body.password.toString(), data[0].password, (err, response) => {
-        if(err) return res.json ({Error: "Password compare error"});
-        if(response) {
-          const username = data[0].username;
-          const token = jwt.sign({username}, process.env.JWT_KEY, {expiresIn: '1d'});
-          res.cookie('token', token);
-          return res.json({Status: "Success"});
+  const { email, password } = req.body;
+  db.query("SELECT * FROM user WHERE email = ?", [email], (err, data) => {
+    if (err) return res.json({ Error: "Database error" });
+    if (data.length > 0) {
+      bcrypt.compare(password, data[0].password, (err, response) => {
+        if (response) {
+          const token = jwt.sign({ username: data[0].username }, process.env.JWT_KEY, { expiresIn: '1d' });
+          res.cookie('token', token, { httpOnly: true });
+          res.json({ Status: "Success", username: data[0].username });
         } else {
-          return res.json({Error: "Password not matched"});
+          res.json({ Error: "Incorrect password" });
         }
-      })
+      });
     } else {
-      return res.json({Error: "No email found"});
+      res.json({ Error: "No user found with that email" });
     }
-  })
-})
-
-// TO Check is the server is running on the PORT
-app.listen(PORT || 9000, () => {
-  console.log(`server listening on port ${PORT}`);
+  });
 });
 
+// Protected Route
+app.get("/", verifyUser, (req, res) => {
+  res.json({ Status: "Success", username: req.username });
+});
 
+// Logout Route
+app.post('/logout', (req, res) => {
+  res.clearCookie('token');
+  res.json({ Status: 'Logged out successfully' });
+});
 
-
-
-
-
-
-
-
-
-// TO CHECK THE CONNECTION BETWEEN THE mySQL AND BACKEND
-// db.connect( (error) =>{
-//   if(error){
-//     console.log(error)
-//   }else{
-//     console.log("mySQL Connected...")
-//   }
-// })
-
-
-
-// API TEST PRODUCT
-// app.get("/server/products", (req, res) => {
-//   res.json(products)
-// });
-
-// app.get("/server/products/:id", (req, res) => {
-//   const product = products.find((product)=>product.id == req.params.id)
-//   res.json(product)
-// });
+// Start Server
+const PORT = process.env.PORT || 9000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server listening on port ${PORT}`);
+});
