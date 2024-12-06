@@ -19,7 +19,7 @@ const Faq = () => {
                     <div id="accordion-arrow-icon-body-1" aria-labelledby="accordion-arrow-icon-heading-1">
                         <div className="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
                             <h1 className="mb-2 font-bold text-gray-900 dark:text-gray-400">HOW CAN I SPEND POINTS?</h1>
-                            <p className="text-gray-500 dark:text-gray-400">It is very simple and straightforward. Just look at the <a className="font-bold text-gray-900 "href="./rewards.jsx">Rewards</a> tab to see the list of the discounts you can reedem.</p> 
+                            <p className="text-gray-500 dark:text-gray-400">It is very simple and straightforward. Just look at the <a className="font-bold text-gray-900 "href="./rewards">Rewards</a> tab to see the list of the discounts you can reedem.</p> 
                         </div>
                     </div>
                     </h2>
